@@ -1,4 +1,4 @@
-# Node Editor
+# Associative Graph Editor
 
 Excalidraw meets Obsidian graph view.
 
