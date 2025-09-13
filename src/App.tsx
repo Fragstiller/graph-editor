@@ -92,8 +92,13 @@ function FlowComponent() {
         labelBgBorderRadius: 4,
         sourceHandle: connection.sourceHandle,
         targetHandle: connection.targetHandle,
+        markerEnd: {
+          type: 'arrowclosed',
+          width: 20,
+          height: 20,
+          color: '#606060',
+        },
       };
-      // @ts-expect-error whatever
       setEdges((eds) => addEdge(edge, eds));
       setEdgeId((id) => id + 1);
     },
@@ -133,6 +138,50 @@ function FlowComponent() {
     const link = document.createElement('a');
     link.href = url;
     link.download = 'graph-data.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [nodes, edges]);
+
+  const onExportMarkdown = useCallback(() => {
+    let markdown = '# Graph Export\n\n';
+
+    if (nodes.length === 0 && edges.length === 0) {
+      markdown += 'No nodes or connections found.\n';
+    } else {
+      if (nodes.length > 0) {
+        markdown += '## Nodes\n\n';
+        nodes.forEach((node, index) => {
+          const label = (node.data as { label?: string })?.label || 'Untitled Node';
+          markdown += `${index + 1}. **${label}**\n`;
+        });
+        markdown += '\n';
+      }
+
+      if (edges.length > 0) {
+        markdown += '## Relationships\n\n';
+        edges.forEach((edge, index) => {
+          const sourceNode = nodes.find(n => n.id === edge.source);
+          const targetNode = nodes.find(n => n.id === edge.target);
+          const sourceLabel = (sourceNode?.data as { label?: string })?.label || `Node ${edge.source}`;
+          const targetLabel = (targetNode?.data as { label?: string })?.label || `Node ${edge.target}`;
+          const connectionLabel = (edge.label as string) || 'is connected to';
+
+          markdown += `${index + 1}. **${sourceLabel}** ${connectionLabel} **${targetLabel}**\n`;
+        });
+        markdown += '\n';
+      }
+
+      markdown += '---\n\n';
+      markdown += `*Generated on ${new Date().toLocaleString()}*\n`;
+    }
+
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'graph-export.md';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -221,6 +270,9 @@ function FlowComponent() {
         </button>
         <button onClick={onExportJSON} className="toolbar-button">
           Export JSON
+        </button>
+        <button onClick={onExportMarkdown} className="toolbar-button">
+          Export Markdown
         </button>
         <label className="toolbar-button">
           Import JSON

@@ -5,6 +5,7 @@
 }
 
 body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -109,6 +110,18 @@ button {
 .react-flow__edge-textbg {
   fill: #1e1e1e;
   fill-opacity: 0.8;
+}
+
+.react-flow__arrowhead {
+  fill: #606060;
+}
+
+.react-flow__edge:hover .react-flow__arrowhead {
+  fill: #808080;
+}
+
+.react-flow__edge.selected .react-flow__arrowhead {
+  fill: #4a9eff;
 }
 
 .react-flow__controls {
