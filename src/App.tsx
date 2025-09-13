@@ -1,4 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { debounce } from 'lodash';
+import { useLocalStorage } from 'usehooks-ts';
 import {
   ReactFlow,
   Controls,
@@ -29,8 +31,6 @@ const nodeTypes: NodeTypes = {
   circular: CircularNode,
 };
 
-const STORAGE_KEY = 'graph-editor-data';
-
 interface GraphData {
   nodes: Node[];
   edges: Edge[];
@@ -43,12 +43,12 @@ function FlowComponent() {
   const [nodeId, setNodeId] = useState(1);
   const [edgeId, setEdgeId] = useState(1);
   const [hasLoadedSavedData, setHasLoadedSavedData] = useState(false);
+  const [lsData, setLsData] = useLocalStorage('graph-editor-data', '');
 
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
+    if (lsData) {
       try {
-        const { nodes: savedNodes, edges: savedEdges }: GraphData = JSON.parse(savedData);
+        const { nodes: savedNodes, edges: savedEdges }: GraphData = JSON.parse(lsData);
         if (savedNodes && savedNodes.length > 0) {
           setNodes(savedNodes);
           setEdges(savedEdges || []);
@@ -60,13 +60,19 @@ function FlowComponent() {
         console.error('Failed to load saved graph:', error);
         setHasLoadedSavedData(true);
       }
+    } else {
+      setHasLoadedSavedData(true);
     }
-  }, []);
+  }, [lsData]);
+
+  const debouncedSetStorage = useRef(debounce((value) => {
+    setLsData(value);
+  }, 500));
 
   useEffect(() => {
     if (!hasLoadedSavedData) return;
     const graphData: GraphData = { nodes, edges };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(graphData));
+    debouncedSetStorage.current(JSON.stringify(graphData));
   }, [nodes, edges, hasLoadedSavedData]);
 
   const onNodesChange: OnNodesChange = useCallback(
@@ -127,7 +133,7 @@ function FlowComponent() {
     setEdges([]);
     setNodeId(1);
     setEdgeId(1);
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('graph-editor-data');
   }, []);
 
   const onExportJSON = useCallback(() => {
