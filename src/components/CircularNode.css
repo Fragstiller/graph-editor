@@ -1,0 +1,101 @@
+.circular-node {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #1e1e1e;
+  border: 2px solid #404040;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.circular-node:hover {
+  border-color: #606060;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+}
+
+.circular-node.selected {
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3), 0 6px 10px rgba(0, 0, 0, 0.4);
+}
+
+.node-label {
+  color: #e0e0e0;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px;
+  word-wrap: break-word;
+  max-width: 100px;
+  user-select: none;
+}
+
+.node-input {
+  background: #2a2a2a;
+  border: 1px solid #4a9eff;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 14px;
+  padding: 4px 8px;
+  width: 80px;
+  text-align: center;
+  outline: none;
+}
+
+.handle {
+  width: 12px;
+  height: 12px;
+  background: #4a9eff;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.handle-center {
+  background: transparent;
+  border: none;
+  opacity: 0;
+  pointer-events: all;
+}
+
+.circular-node:hover .handle {
+  opacity: 1;
+}
+
+.circular-node.selected .handle {
+  opacity: 1;
+}
+
+.react-flow__handle-top {
+  top: 6px;
+}
+
+.react-flow__handle-bottom {
+  bottom: 6px;
+}
+
+.react-flow__handle-left {
+  left: 6px;
+}
+
+.react-flow__handle-right {
+  right: 6px;
+}
+
+.react-flow__handle[data-id="center"],
+.react-flow__handle[data-id="center-source"] {
+  position: absolute;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 60px !important;
+  height: 60px !important;
+  background: transparent !important;
+  border: none !important;
+  opacity: 0 !important;
+  pointer-events: all !important;
+  z-index: 10 !important;
+}
